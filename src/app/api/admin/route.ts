@@ -59,6 +59,15 @@ export async function GET(req: Request) {
         email: true,
         role: true,
         createdAt: true,
+        posts: {
+          where: { isDeleted: false },
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
