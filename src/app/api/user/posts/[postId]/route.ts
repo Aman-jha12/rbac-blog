@@ -40,3 +40,40 @@ export async function GET(
     }catch(error){
         return NextResponse.json({message:"Internal Server Error",error},{status:500})
     }}
+
+
+
+    export async function DELETE    (
+      req: Request,
+      { params }: { params: { postId: string } }
+    ) {
+      try{
+        const session=await getServerSession(authOptions);
+        if(!session){
+           return NextResponse.json({message:"Unauthorized"},{status:401})
+        }
+
+        const post=await prisma.post.findFirst({
+            where:{
+                id:params.postId,
+                authorId:session.user.id,
+                isDeleted:false
+             }
+            })
+            
+
+            if(!post){
+                return NextResponse.json({message:"Post not found"},{status:404})
+            }
+
+            if(params.postId!==post?.id){
+                return NextResponse.json({message:"Forbidden"},{status:403})
+            }
+
+
+
+
+        }catch(error){
+            return NextResponse.json({message:"Internal Server Error",error},{status:500})
+        }
+    }
