@@ -1,36 +1,37 @@
-import { NextResponse } from "next/server";
-import {prisma} from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { prisma } from "@/lib/prisma";
+import  zod  from "zod";
 
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
 
-
-
-
-export async function GET(){
-    try{
-        const session=await getServerSession(authOptions);
-        if(!session){
-            return NextResponse.json({
-                message:"Unauthorized",
-                status:401
-            })
-        }
-       
-
-
-        const post=await prisma.post.findMany({
-            where:{
-                authorId:session.user.id,
-                isDeleted:false
-             }
-            
-        })
-      if(!post || post.length === 0){
-        return NextResponse.json({message:"No posts found"},{status:404})
-      }
-      return NextResponse.json(post,{status:200})
-    }catch(error){
-        return NextResponse.json({message:"Internal Server Error", error},{status:500})
+    if (!session) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
     }
+
+    const posts = await prisma.post.findMany({
+      where: {
+        authorId: session.user.id,
+        isDeleted: false,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(posts, { status: 200 });
+
+  } catch (error) {
+    console.error("USER_GET_POSTS:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }
