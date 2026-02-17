@@ -89,3 +89,22 @@ export async function GET(req: Request) {
     );
   }
 }
+
+
+export async function PUT(req: Request) {
+    try{
+        // 1. Authentication
+        const session = await getServerSession(authOptions);
+        if(!session){
+            return NextResponse.json({message:"unauthorized"}, {status:401})
+        }
+
+
+        //Authorization (RBAC)
+        if(session.user.role!=="ADMIN"){
+            return NextResponse.json({message:"forbidden"}, {status:403})
+        }
+
+        
+    }
+}
