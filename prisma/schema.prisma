@@ -17,20 +17,24 @@ enum Role {
 
 // USER MODEL
 model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String    @unique
-  role          Role      @default(USER)
-  isDeleted     Boolean   @default(false)
+  id             String   @id @default(cuid())
+  name           String?
+  email          String?  @unique
+  emailVerified  DateTime?    // ✅ REQUIRED by NextAuth
+  image          String?      // ✅ REQUIRED by OAuth providers
 
-  posts         Post[]
-  accounts      Account[]
-  sessions      Session[]
+  role           Role     @default(USER)
+  isDeleted      Boolean  @default(false)
+  lastLoginAt    DateTime?
 
-  lastLoginAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  posts          Post[]
 }
+
 
 // POST MODEL
 model Post {
